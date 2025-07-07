@@ -8,6 +8,7 @@ import practiceIcon from "@/assets/practice-icon.jpg";
 import storyIcon from "@/assets/story-icon.jpg";
 import progressIcon from "@/assets/progress-icon.jpg";
 import { Book, Gamepad, Headphones, List, Mic, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const learningCards = [
@@ -162,13 +163,25 @@ const Index = () => {
                     <p className="text-muted-foreground mb-4 leading-relaxed">
                       {card.description}
                     </p>
-                    <Button 
-                      variant={card.variant} 
-                      size="learning-card"
-                      className="w-full"
-                    >
-                      Explore {card.title}
-                    </Button>
+                    {card.title === "Practice Zone" ? (
+                      <Link to="/practice" className="w-full">
+                        <Button 
+                          variant={card.variant} 
+                          size="learning-card"
+                          className="w-full"
+                        >
+                          Explore {card.title}
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button 
+                        variant={card.variant} 
+                        size="learning-card"
+                        className="w-full"
+                      >
+                        Explore {card.title}
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
