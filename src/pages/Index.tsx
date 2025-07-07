@@ -173,6 +173,16 @@ const Index = () => {
                           Explore {card.title}
                         </Button>
                       </Link>
+                    ) : card.title === "Vocabulary" ? (
+                      <Link to="/vocabulary" className="w-full">
+                        <Button 
+                          variant={card.variant} 
+                          size="learning-card"
+                          className="w-full"
+                        >
+                          Explore {card.title}
+                        </Button>
+                      </Link>
                     ) : (
                       <Button 
                         variant={card.variant} 
