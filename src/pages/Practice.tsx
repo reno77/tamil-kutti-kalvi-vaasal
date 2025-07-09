@@ -50,7 +50,7 @@ const Practice = () => {
   useEffect(() => {
     // You can add more quiz files here as needed
     const quizFiles = [
-      '/src/assets/quizes/custom-quiz-common-confusions.json',
+      '/assets/quizes/custom-quiz-common-confusions.json',
       // Add more quiz JSON paths here if needed
     ];
 
