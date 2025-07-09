@@ -141,12 +141,28 @@ export const CommonConfusionsQuiz: React.FC<CommonConfusionsQuizProps> = ({ data
 
 
   // Meaning choice stage
-  if (stage === 'meaning') {
-    const options = [
+  const [meaningOptions, setMeaningOptions] = useState(() => {
+    const opts = [
       { text: targetWord.meaning, isCorrect: true },
       { text: otherWord.meaning, isCorrect: false },
     ];
-    shuffleArray(options);
+    shuffleArray(opts);
+    return opts;
+  });
+  useEffect(() => {
+    // Reset options order only when question changes
+    setMeaningOptions(() => {
+      const opts = [
+        { text: targetWord.meaning, isCorrect: true },
+        { text: otherWord.meaning, isCorrect: false },
+      ];
+      shuffleArray(opts);
+      return opts;
+    });
+    // eslint-disable-next-line
+  }, [quizIdx]);
+
+  if (stage === 'meaning') {
     return (
       <div className="w-full max-w-xl mx-auto space-y-6">
         <div className="text-xl font-bold text-blue-700 mb-2">Part 1 : English Meaning</div>
@@ -157,7 +173,7 @@ export const CommonConfusionsQuiz: React.FC<CommonConfusionsQuizProps> = ({ data
           {quizPair.map(item => `"${item.word}" (${item.meaning}): ${item.sentence}`).join('\n')}
         </div>
         <div className="flex flex-col gap-3">
-          {options.map((opt, i) => (
+          {meaningOptions.map((opt, i) => (
             <button
               key={i}
               className={`p-3 rounded border text-left transition-all
@@ -217,26 +233,35 @@ export const CommonConfusionsQuiz: React.FC<CommonConfusionsQuizProps> = ({ data
         {sentenceTargetWord.blankedSentence}
       </div>
       <div className="flex flex-col gap-3">
-        {sentenceOptions.map((opt, i) => (
-          <button
-            key={i}
-            className={`p-3 rounded border text-left transition-all ${disableOptions ? 'opacity-60' : 'hover:bg-blue-100'} ${feedback && opt.isCorrect ? 'border-green-500' : 'border-gray-300'}`}
-            disabled={disableOptions}
-            onClick={() => {
-              if (opt.isCorrect) {
-                setFeedback('சரியான பதில்! (Correct Answer!)');
-                setExplanation(sentenceTargetWord.sentenceExplanationCorrect + '\n\n' +
-                  quizPair.map(item => `"${item.word}" (${item.meaning}): ${item.sentence}`).join('\n'));
-                setDisableOptions(true);
-              } else {
-                setFeedback('தவறான பதில். மீண்டும் முயற்சிக்கவும். (Wrong Answer. Please try again.)');
-                setExplanation(sentenceTargetWord.sentenceExplanationWrong);
-              }
-            }}
-          >
-            {opt.word}
-          </button>
-        ))}
+        {sentenceOptions.map((opt, i) => {
+          // Only highlight green if correct AND user selected it (feedback is correct)
+          let buttonClass = 'p-3 rounded border text-left transition-all ';
+          if (disableOptions) buttonClass += 'opacity-60 ';
+          else buttonClass += 'hover:bg-blue-100 ';
+          if (feedback && opt.isCorrect && selectedIdx === i && feedback.includes('சரியான')) buttonClass += 'border-green-500 bg-green-50 text-green-700 ';
+          else buttonClass += 'border-gray-300 ';
+          return (
+            <button
+              key={i}
+              className={buttonClass}
+              disabled={disableOptions}
+              onClick={() => {
+                setSelectedIdx(i);
+                if (opt.isCorrect) {
+                  setFeedback('சரியான பதில்! (Correct Answer!)');
+                  setExplanation(sentenceTargetWord.sentenceExplanationCorrect + '\n\n' +
+                    quizPair.map(item => `"${item.word}" (${item.meaning}): ${item.sentence}`).join('\n'));
+                  setDisableOptions(true);
+                } else {
+                  setFeedback('தவறான பதில். மீண்டும் முயற்சிக்கவும். (Wrong Answer. Please try again.)');
+                  setExplanation(sentenceTargetWord.sentenceExplanationWrong);
+                }
+              }}
+            >
+              {opt.word}
+            </button>
+          );
+        })}
       </div>
 
       {explanation && (
@@ -252,6 +277,10 @@ export const CommonConfusionsQuiz: React.FC<CommonConfusionsQuizProps> = ({ data
           className={`mt-4 px-6 py-2 border-2 border-blue-600 rounded font-semibold transition-all bg-white text-blue-700 disabled:opacity-60 disabled:cursor-not-allowed`}
           disabled={!nextEnabled}
           onClick={() => {
+            const newProgress = Math.round(((currentIndex + 1) / data.length) * 100);
+            if (typeof (window as any).updateLessonProgress === 'function') {
+              (window as any).updateLessonProgress(newProgress);
+            }
             if (currentIndex < questionOrder.length - 1) {
               setCurrentIndex(currentIndex + 1);
               setStage('meaning');
@@ -274,12 +303,12 @@ export const CommonConfusionsQuiz: React.FC<CommonConfusionsQuizProps> = ({ data
           {nextEnabled ? 'அடுத்த கேள்வி (Next Question)' : `அடுத்த கேள்வி (${countdown})`}
         </button>
       )}
-      <div className="flex justify-center">
+      {/* <div className="flex justify-center">
         <Button variant="learning-secondary" size="lg" onClick={handlePronunciation}>
           <Volume2 className="w-4 h-4 mr-2" />
           Hear Pronunciation
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 

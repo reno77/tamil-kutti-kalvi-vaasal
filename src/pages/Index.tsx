@@ -12,30 +12,30 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   const learningCards = [
-    {
-      title: "Learn Tamil",
-      description: "Start your Tamil journey with interactive lessons",
-      icon: Book,
-      image: vocabularyIcon,
-      variant: "learning" as const,
-      color: "primary"
-    },
-    {
-      title: "Games",
-      description: "Fun games to practice Tamil skills",
-      icon: Gamepad,
-      image: gamesIcon,
-      variant: "learning-purple" as const,
-      color: "purple"
-    },
-    {
-      title: "Vocabulary",
-      description: "Build your Tamil word collection",
-      icon: List,
-      image: vocabularyIcon,
-      variant: "learning-green" as const,
-      color: "green"
-    },
+    // {
+    //   title: "Learn Tamil",
+    //   description: "Start your Tamil journey with interactive lessons",
+    //   icon: Book,
+    //   image: vocabularyIcon,
+    //   variant: "learning" as const,
+    //   color: "primary"
+    // },
+    // {
+    //   title: "Games",
+    //   description: "Fun games to practice Tamil skills",
+    //   icon: Gamepad,
+    //   image: gamesIcon,
+    //   variant: "learning-purple" as const,
+    //   color: "purple"
+    // },
+    // {
+    //   title: "Vocabulary",
+    //   description: "Build your Tamil word collection",
+    //   icon: List,
+    //   image: vocabularyIcon,
+    //   variant: "learning-green" as const,
+    //   color: "green"
+    // },
     {
       title: "Practice Zone",
       description: "Test your skills with exercises",
@@ -44,30 +44,30 @@ const Index = () => {
       variant: "learning-secondary" as const,
       color: "secondary"
     },
-    {
-      title: "Audio Library",
-      description: "Listen and learn pronunciation",
-      icon: Headphones,
-      image: audioIcon,
-      variant: "learning" as const,
-      color: "primary"
-    },
-    {
-      title: "Story Corner",
-      description: "Discover Tamil stories and tales",
-      icon: Book,
-      image: storyIcon,
-      variant: "learning-purple" as const,
-      color: "purple"
-    },
-    {
-      title: "Progress Tracker",
-      description: "See your learning achievements",
-      icon: Mic,
-      image: progressIcon,
-      variant: "learning-green" as const,
-      color: "green"
-    }
+    // {
+    //   title: "Audio Library",
+    //   description: "Listen and learn pronunciation",
+    //   icon: Headphones,
+    //   image: audioIcon,
+    //   variant: "learning" as const,
+    //   color: "primary"
+    // },
+    // {
+    //   title: "Story Corner",
+    //   description: "Discover Tamil stories and tales",
+    //   icon: Book,
+    //   image: storyIcon,
+    //   variant: "learning-purple" as const,
+    //   color: "purple"
+    // },
+    // {
+    //   title: "Progress Tracker",
+    //   description: "See your learning achievements",
+    //   icon: Mic,
+    //   image: progressIcon,
+    //   variant: "learning-green" as const,
+    //   color: "green"
+    // }
   ];
 
   return (
@@ -86,12 +86,14 @@ const Index = () => {
                 Join thousands of children on an exciting journey to learn Tamil through stories, games, and interactive activities designed just for you!
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button variant="learning" size="xl" className="bg-white text-primary hover:bg-white/90">
-                  Start Learning Now
-                </Button>
-                <Button variant="outline" size="xl" className="border-white text-white hover:bg-white hover:text-primary">
+                <Link to="/practice">
+                  <Button variant="learning" size="xl" className="bg-white text-primary hover:bg-white/90">
+                    Start Learning Now
+                  </Button>
+                </Link>
+                {/* <Button variant="outline" size="xl" className="border-white text-white hover:bg-white hover:text-primary">
                   Watch Demo
-                </Button>
+                </Button> */}
               </div>
             </div>
             <div className="relative">
@@ -106,7 +108,7 @@ const Index = () => {
       </section>
 
       {/* Login Section */}
-      <section className="py-8 px-4 bg-muted/30">
+      {/* <section className="py-8 px-4 bg-muted/30">
         <div className="container mx-auto max-w-4xl">
           <Card className="shadow-soft">
             <CardContent className="p-6">
@@ -127,7 +129,7 @@ const Index = () => {
             </CardContent>
           </Card>
         </div>
-      </section>
+      </section> */}
 
       {/* Learning Sections */}
       <section className="py-16 px-4">
@@ -137,7 +139,7 @@ const Index = () => {
               Explore Tamil Learning
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Choose your adventure! Each section is designed to make learning Tamil fun and engaging for young minds.
+              Choose your adventure! Each section is designed to make learning Tamil fun and engaging for young minds. New sections will be added soon.
             </p>
           </div>
 

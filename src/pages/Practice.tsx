@@ -17,51 +17,21 @@ const Practice = () => {
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
   const [exercises, setExercises] = useState<any[]>([]);
-
-  const units = [
-    // {
-    //   id: 1,
-    //   title: "Tamil Letters",
-    //   lessons: [
-    //     { id: 1, title: "Vowels (உயிர்)", progress: 100, stars: 3 },
-    //     { id: 2, title: "Consonants (மெய்)", progress: 80, stars: 2 },
-    //     { id: 3, title: "Combined Letters", progress: 60, stars: 1 },
-    //   ]
-    // },
-    // {
-    //   id: 2,
-    //   title: "Basic Words",
-    //   lessons: [
-    //     { id: 1, title: "Family Words", progress: 90, stars: 3 },
-    //     { id: 2, title: "Colors", progress: 70, stars: 2 },
-    //     { id: 3, title: "Numbers", progress: 50, stars: 1 },
-    //   ]
-    // },
-    // {
-    //   id: 3,
-    //   title: "Simple Sentences",
-    //   lessons: [
-    //     { id: 1, title: "Greetings", progress: 40, stars: 0 },
-    //     { id: 2, title: "Questions", progress: 20, stars: 0 },
-    //     { id: 3, title: "Daily Activities", progress: 0, stars: 0 },
-    //   ]
-    // },
+  const initialUnits = [
     {
       id: 1,
       title: "Similar Sounding Words",
       lessons: [
-        { id: 1, title: "Common Confusions", progress: 30, stars: 1 },
+        { id: 1, title: "Common Confusions", progress: 0, stars: 1 },
         // { id: 2, title: "Homophones", progress: 10, stars: 0 },
         // { id: 3, title: "Sound Patterns", progress: 0, stars: 0 },
       ]
     }
   ];
+  const [unitsState, setUnitsState] = useState(initialUnits);
 
   // Map lessons to exercises by unit and lesson
   const lessonExerciseMap: Record<string, number> = {
-    // '1-1': 0, // Tamil Letters - Vowels
-    // '1-2': 1, // Tamil Letters - Consonants
-    // '1-3': 2, // Tamil Letters - Combined Letters
     '1-1': 0, // Similar Sounding Words - Common Confusions
     // Add more mappings as you add more exercises/lessons
   };
@@ -103,6 +73,82 @@ const Practice = () => {
     });
   }, []);
 
+  // Update progress and stars on lesson completion
+  useEffect(() => {
+    if (completed) {
+      setUnitsState((prevUnits) => {
+        return prevUnits.map((unit) => {
+          if (unit.id !== selectedUnit) return unit;
+          return {
+            ...unit,
+            lessons: unit.lessons.map((lesson) => {
+              if (lesson.id !== selectedLesson) return lesson;
+              // Calculate stars
+              const percent = exercises.length > 0 ? (score / exercises.length) * 100 : 0;
+              let stars = 0;
+              if (percent >= 90) stars = 3;
+              else if (percent >= 75) stars = 2;
+              else if (percent >= 50) stars = 1;
+              return {
+                ...lesson,
+                progress: 100,
+                stars,
+              };
+            }),
+          };
+        });
+      });
+    }
+  }, [completed]);
+
+  // Update progress and stars as user completes each question
+  useEffect(() => {
+    // Only update if not completed (so we don't overwrite the 100% on finish)
+    if (!completed && exercises.length > 0) {
+      setUnitsState((prevUnits) => {
+        return prevUnits.map((unit) => {
+          if (unit.id !== selectedUnit) return unit;
+          return {
+            ...unit,
+            lessons: unit.lessons.map((lesson) => {
+              if (lesson.id !== selectedLesson) return lesson;
+              // Progress is percent of questions completed
+              const progress = Math.round(((currentExercise) / exercises.length) * 1000);
+              return {
+                ...lesson,
+                progress,
+              };
+            }),
+          };
+        });
+      });
+    }
+  }, [currentExercise, exercises.length, selectedUnit, selectedLesson, completed]);
+
+  // Listen for progress updates from quiz components
+  useEffect(() => {
+    (window as any).updateLessonProgress = (progress: number) => {
+      setUnitsState((prevUnits) => {
+        return prevUnits.map((unit) => {
+          if (unit.id !== selectedUnit) return unit;
+          return {
+            ...unit,
+            lessons: unit.lessons.map((lesson) => {
+              if (lesson.id !== selectedLesson) return lesson;
+              return {
+                ...lesson,
+                progress: Math.min(progress, 100),
+              };
+            }),
+          };
+        });
+      });
+    };
+    return () => {
+      (window as any).updateLessonProgress = undefined;
+    };
+  }, [selectedUnit, selectedLesson]);
+
   const handleExerciseComplete = (isCorrect: boolean) => {
     if (isCorrect) {
       setScore(score + 1);
@@ -115,13 +161,30 @@ const Practice = () => {
     }
   };
 
+  // Reset progress and stars when retrying
   const resetExercises = () => {
     setCurrentExercise(0);
     setScore(0);
     setCompleted(false);
+    setUnitsState((prevUnits) => {
+      return prevUnits.map((unit) => {
+        if (unit.id !== selectedUnit) return unit;
+        return {
+          ...unit,
+          lessons: unit.lessons.map((lesson) => {
+            if (lesson.id !== selectedLesson) return lesson;
+            return {
+              ...lesson,
+              progress: 0,
+              stars: 0,
+            };
+          }),
+        };
+      });
+    });
   };
 
-  const currentUnit = units.find(u => u.id === selectedUnit);
+  const currentUnit = unitsState.find(u => u.id === selectedUnit);
   const currentLesson = currentUnit?.lessons.find(l => l.id === selectedLesson);
 
   return (
@@ -156,7 +219,7 @@ const Practice = () => {
                 <CardTitle className="text-lg">Learning Path</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {units.map((unit) => (
+                {unitsState.map((unit) => (
                   <div key={unit.id} className="space-y-2">
                     <Button
                       variant={selectedUnit === unit.id ? "learning" : "ghost"}
