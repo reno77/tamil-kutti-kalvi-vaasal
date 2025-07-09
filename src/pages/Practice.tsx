@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { DragDropExercise } from "@/components/practice/DragDropExercise";
 import { FlashCard } from "@/components/practice/FlashCard";
 import { MultipleChoice } from "@/components/practice/MultipleChoice";
+import { CommonConfusionsQuiz } from "@/components/practice/CommonConfusionsQuiz";
 
 const Practice = () => {
   const [selectedUnit, setSelectedUnit] = useState(1);
@@ -15,62 +16,92 @@ const Practice = () => {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [score, setScore] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [exercises, setExercises] = useState<any[]>([]);
 
   const units = [
+    // {
+    //   id: 1,
+    //   title: "Tamil Letters",
+    //   lessons: [
+    //     { id: 1, title: "Vowels (உயிர்)", progress: 100, stars: 3 },
+    //     { id: 2, title: "Consonants (மெய்)", progress: 80, stars: 2 },
+    //     { id: 3, title: "Combined Letters", progress: 60, stars: 1 },
+    //   ]
+    // },
+    // {
+    //   id: 2,
+    //   title: "Basic Words",
+    //   lessons: [
+    //     { id: 1, title: "Family Words", progress: 90, stars: 3 },
+    //     { id: 2, title: "Colors", progress: 70, stars: 2 },
+    //     { id: 3, title: "Numbers", progress: 50, stars: 1 },
+    //   ]
+    // },
+    // {
+    //   id: 3,
+    //   title: "Simple Sentences",
+    //   lessons: [
+    //     { id: 1, title: "Greetings", progress: 40, stars: 0 },
+    //     { id: 2, title: "Questions", progress: 20, stars: 0 },
+    //     { id: 3, title: "Daily Activities", progress: 0, stars: 0 },
+    //   ]
+    // },
     {
       id: 1,
-      title: "Tamil Letters",
+      title: "Similar Sounding Words",
       lessons: [
-        { id: 1, title: "Vowels (உயிர்)", progress: 100, stars: 3 },
-        { id: 2, title: "Consonants (மெய்)", progress: 80, stars: 2 },
-        { id: 3, title: "Combined Letters", progress: 60, stars: 1 },
-      ]
-    },
-    {
-      id: 2,
-      title: "Basic Words",
-      lessons: [
-        { id: 1, title: "Family Words", progress: 90, stars: 3 },
-        { id: 2, title: "Colors", progress: 70, stars: 2 },
-        { id: 3, title: "Numbers", progress: 50, stars: 1 },
-      ]
-    },
-    {
-      id: 3,
-      title: "Simple Sentences",
-      lessons: [
-        { id: 1, title: "Greetings", progress: 40, stars: 0 },
-        { id: 2, title: "Questions", progress: 20, stars: 0 },
-        { id: 3, title: "Daily Activities", progress: 0, stars: 0 },
+        { id: 1, title: "Common Confusions", progress: 30, stars: 1 },
+        // { id: 2, title: "Homophones", progress: 10, stars: 0 },
+        // { id: 3, title: "Sound Patterns", progress: 0, stars: 0 },
       ]
     }
   ];
 
-  const exercises = [
-    {
-      type: "flashcard",
-      question: "What does 'அம்மா' mean?",
-      tamil: "அம்மா",
-      answer: "Mother",
-      pronunciation: "Amma"
-    },
-    {
-      type: "multiple-choice",
-      question: "Which Tamil letter makes the 'ka' sound?",
-      options: ["க", "ங", "ச", "ந"],
-      correct: 0,
-      tamil: "க"
-    },
-    {
-      type: "drag-drop",
-      question: "Match the Tamil letters with their sounds",
-      pairs: [
-        { tamil: "அ", english: "a" },
-        { tamil: "இ", english: "i" },
-        { tamil: "உ", english: "u" }
-      ]
+  // Map lessons to exercises by unit and lesson
+  const lessonExerciseMap: Record<string, number> = {
+    // '1-1': 0, // Tamil Letters - Vowels
+    // '1-2': 1, // Tamil Letters - Consonants
+    // '1-3': 2, // Tamil Letters - Combined Letters
+    '1-1': 0, // Similar Sounding Words - Common Confusions
+    // Add more mappings as you add more exercises/lessons
+  };
+
+  // Update currentExercise when selectedUnit or selectedLesson changes
+  useEffect(() => {
+    const key = `${selectedUnit}-${selectedLesson}`;
+    if (lessonExerciseMap[key] !== undefined) {
+      setCurrentExercise(lessonExerciseMap[key]);
+    } else {
+      setCurrentExercise(0); // fallback
     }
-  ];
+  }, [selectedUnit, selectedLesson]);
+
+  // Load exercises from JSON files in assets/quizes
+  useEffect(() => {
+    // You can add more quiz files here as needed
+    const quizFiles = [
+      '/src/assets/quizes/custom-quiz-common-confusions.json',
+      // Add more quiz JSON paths here if needed
+    ];
+
+    Promise.all(
+      quizFiles.map((file) =>
+        fetch(file)
+          .then((res) => {
+            if (!res.ok) throw new Error(`Failed to load ${file}`);
+            return res.json();
+          })
+          .catch((err) => {
+            console.error(err);
+            return null;
+          })
+      )
+    ).then((results) => {
+      // Flatten and filter out nulls
+      const loadedExercises = results.filter(Boolean).flat();
+      setExercises(loadedExercises);
+    });
+  }, []);
 
   const handleExerciseComplete = (isCorrect: boolean) => {
     if (isCorrect) {
@@ -202,15 +233,22 @@ const Practice = () => {
                         onComplete={handleExerciseComplete}
                       />
                     )}
+                    {/* Add a condition to render the custom quiz component for 'Common Confusions' exercise */}
+                    {exercises[currentExercise]?.type === 'custom-quiz-common-confusions' && (
+                      <CommonConfusionsQuiz
+                        data={(exercises[currentExercise] as any).data}
+                        onComplete={handleExerciseComplete}
+                      />
+                    )}
                   </div>
 
                   {/* Audio Controls */}
-                  <div className="flex justify-center">
+                  {/* <div className="flex justify-center">
                     <Button variant="learning-secondary" size="lg">
                       <Volume2 className="w-4 h-4 mr-2" />
                       Hear Pronunciation
                     </Button>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             ) : (
