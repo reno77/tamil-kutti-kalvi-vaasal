@@ -1,8 +1,20 @@
-# Welcome to your Lovable project
+# Tamil Kutti Kalvi Vaasal
+
+A modern Tamil Learning and Practice portal designed for grade school children whose second language is Tamil. This web application provides interactive lessons, vocabulary, and practice exercises tailored for young learners, making Tamil language acquisition engaging and effective.
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/3c21909f-53ab-4572-9c3c-b4335811784b
+
+## About the Project
+
+**Tamil Kutti Kalvi Vaasal** is an e-learning platform focused on helping school-age children learn Tamil as a second language. The portal features:
+
+- Interactive lessons and quizzes covering vocabulary, grammar, and common confusions
+- Real-time progress tracking and star rewards to motivate learners
+- Audio, flashcards, and drag-and-drop games for multi-modal learning
+- Designed for ease of use by children and educators
+- Built with modern web technologies for fast, responsive performance
 
 ## How can I edit this code?
 
@@ -60,14 +72,6 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/3c21909f-53ab-4572-9c3c-b4335811784b) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
